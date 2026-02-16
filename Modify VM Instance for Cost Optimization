@@ -1,12 +1,19 @@
-export VM_NAME="lab-vm"
-export ZONE="us-east4-c"  # Replace with your actual zone
 
-gcloud compute instances stop lab-vm --zone [YOUR_ZONE]
-# Example:
-# gcloud compute instances stop lab-vm --zone us-east4-c
+gcloud auth list
 
-gcloud compute instances set-machine-type $VM_NAME \
-  --machine-type e2-medium \
-  --zone $ZONE
+export ZONE=$(gcloud compute project-info describe --format="value(commonInstanceMetadata.items[google-compute-default-zone])")
 
-gcloud compute instances start lab-vm --zone us-east4-c
+export PROJECT_ID=$(gcloud config get-value project)
+
+gcloud config set compute/zone "$ZONE"
+
+gcloud compute instances stop lab-vm --zone="$ZONE"
+
+sleep 10
+
+gcloud compute instances set-machine-type lab-vm --machine-type e2-medium --zone="$ZONE"
+
+sleep 10
+
+gcloud compute instances start lab-vm  --zone="$ZONE"
+
